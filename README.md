@@ -4,7 +4,7 @@
 ## Getting Started
 
 ```
-https://github.com/salva171/clientaccountingnotebook.git
+git clone https://github.com/salva171/clientaccountingnotebook.git
 
 ```
 
