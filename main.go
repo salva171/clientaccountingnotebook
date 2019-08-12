@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"fmt"
 	"path/filepath"
 	"time"
 	"github.com/gorilla/mux"
@@ -56,5 +57,6 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
+	fmt.Println("Server start, listening on port 8000")
 	log.Fatal(srv.ListenAndServe())
 }
