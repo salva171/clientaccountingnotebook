@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Accounting notebook</title>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+    <style>
+        .header {
+            padding: 30px;
+            text-align: center;
+            background: #7680F5;
+            color: white;
+            font-size: 30px;
+            font-family: monospace;
+        }
+        
+        .debit {
+            color: red
+        }
+        
+        .credit {
+            color: blue
+        }
+        
+        .middle-col {
+            margin-top: 20px;
+            margin: 0 auto;
+            width: 600px;
+        }
+        
+        .middle-col .current-state {
+            font-size: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+        
+        .middle-col .table {
+            border: 2px solid black;
+            /* width: 600px;
+            margin: 0 auto;
+            margin-top: 20px;*/
+        }
+    </style>
+
+
+</head>
+
+
+
+<body ng-app="accountingApp" ng-controller="accountingCtrl">
+
+    <script>
+        var app = angular.module('accountingApp', []);
+        app.controller('accountingCtrl', function($scope, $http) {
+
+            $scope.selectedTransaction = {
+                Type: "",
+                Amount: "",
+                Id: "",
+                EffectiveDate: "",
+                AccountAmount: ""
+            }
+
+            $scope.currentAmount = 0
+
+            let config = {
+                method: "GET",
+                url: `http://localhost:8080/transaction/history`
+            }
+
+            $http(config)
+                .then(function(success) {
+                    console.log(success)
+
+
+                    if (success.data.length)
+                        $scope.currentAmount = success.data[success.data.length - 1].AccountAmount;
+
+
+                    $scope.transactions = success.data
+
+                }, function(error) {
+                    console.log(error);
+                });
+
+
+            $scope.transactions = [];
+
+
+            $scope.selectTransaction = (t) => {
+                $scope.selectedTransaction = t;
+            }
+
+        })
+    </script>
+
+
+
+    <div class="header">
+        ACCOUNTING NOTEBOOK APP
+    </div>
+
+
+
+
+
+
+    <div class="middle-col">
+        <div class="current-state">
+            Current amount: {{ currentAmount }}
+        </div>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Type</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="transaction in transactions">
+                    <td ng-class="{'debit': transaction.Type == 'debit','credit': transaction.Type == 'credit' }">{{ transaction.Type }}</td>
+                    <td>{{ transaction.Amount }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary" ng-click="selectTransaction(transaction)" data-toggle="modal" data-target="#exampleModalCenter">Information</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Transaction information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+                </div>
+                <div class="modal-body">
+                    <div>Id: {{ selectedTransaction.Id }}</div>
+                    <div>Type: {{ selectedTransaction.Type }}</div>
+                    <div>Amount: {{ selectedTransaction.Amount }}</div>
+                    <div>Account amount: {{ selectedTransaction.AccountAmount }}</div>
+                    <div>Effective Date:{{ selectedTransaction.EffectiveDate }}</div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html
